@@ -2,6 +2,10 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "sshKeyData": {
+      "type": "string",
+      "defaultValue": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGgkeC8d8fDaAoMavLqJZ9r5vJ+PJs51wfmQF5vfoRfOS4/CGVRdbA5KKpVmQNSQTtcGLynbQPeyqRJNo/DhxHaONIMmDBkwU4AjLUI61XE0ztKEf4iT8M5MH/bNVEZMZJ6Zsm1rWIIRVpnNd3n5kXTIwxLMY4sKBW5mgN56EfqrRlKIjBJ/MHUZ6jHd4IHq9o+1wMXp4UV1JwQXdUjrkwJLdU9/sqVB9XKK8dgrpwqkLgLlVF0TFCyu/kNc+NrfpiVd35gWUBD3kkK9su8eXVH0DGs6kQyeMA4lDa2RBZrdCxeiAD0JVIfdjrkithVHwgDMK0u2bFIR5U027Lll9n makevoid@makevoid-mbp"
+    },
     "location": {
       "type": "String",
       "metadata": {
@@ -152,12 +156,7 @@
         "description": "Username for sample VM"
       }
     },
-    "adminPassword": {
-      "type": "CHANGE_ME_3513212_PLZ",
-      "metadata": {
-        "description": "User password for sample VM - What about key authentication instead?"
-      }
-    },
+
     "imagePublisher": {
       "type": "string",
       "defaultValue": "Canonical",
@@ -372,7 +371,17 @@
         "osProfile": {
           "computername": "[parameters('vmName')]",
           "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": "true",
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "/home/[parameters('adminUsername')]/.ssh/authorized_keys",
+                  "keyData": "[parameters('sshKeyData')]"
+                }
+              ]
+            }
+          }
         },
         "storageProfile": {
           "imageReference": {
